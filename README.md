@@ -1,6 +1,19 @@
 # pyscFilteredViewer
 Runs files through filter to their default associated action with OnSave event (or on request) [for Notepad++ using PythonScript]
 
+## Table of Contents
+
+* [TOP](#pyscfilteredviewer)
+* [Inspiration / Justification](#inspiration--justification)
+* [Installation](#installation)
+  * [Installation Prerequisites](#installation-prerequsisites)
+  * [Installation Procedure](#installation-procedure)
+  * [Scripts](#scripts)
+* [Configuration](#configuration)
+* [One-time Filtering](#one-time-filtering)
+* [Filter On Save](#filter-on-save)
+* [Future Features](#future-features)
+
 ## Inspiration / Justification
 This was inspired by the [PreviewHTML](http://fossil.2of4.net/npp_preview) plugin for Notepad++, which was designed to embed an HTML-previewer in Notepad++.  But the more-useful-to-me feature was that you could apply a filter program to the current file, and it would filter into HTML, which would then be rendered in the PreviewHTML window.  Unfortunately, PreviewHTML hasn't been updated to work with 64-bit Notepad++ (though the developer has been working on it on and off for more than a year, as of Jan 2019), and I'd really like to transition to 64bit as my main editor.
 
@@ -26,19 +39,19 @@ I have kept the configuration file compatbile with PreviewHTML's `filters.ini` -
     * under Notepad++ 7.6.2 and later: I believe they go xxx and yyy, but do not know for sure
         * "machine scripts": the `notepad++.exe` install-directory
         * "user scripts": `%AppData%\Notepad++\plugins\config\PythonScript\scripts ` and/or `%ProgramData%\notepad++\plugins\config\PythonScript\scripts `
-    * either of these should create a `pyscFilteredViewer\ ` subdirectory, with appropriate scripts (described in **Contents**, below)
+    * either of these should create a `pyscFilteredViewer\ ` subdirectory, with appropriate scripts (described in [**Scripts**](#scripts), below)
 3. If you had Notepad++ open, close and reload Notepad++ .
     * This will cause Notepad++ and PythonScript to see the new scripts
     * You can see them in the **Plugins > PythonScript > Scripts** menu
-4. Run **Plugins > PythonScript > Scripts > pyscFilteredViewer > pyscfvEditConfig ** to configure this utility: see **Configuration** (below) for configuration details
+4. Run **Plugins > PythonScript > Scripts > pyscFilteredViewer > pyscfvEditConfig ** to configure this utility: see [**Configuration**](#configuration) (below) for configuration details
 
-### Contents
+### Scripts
 
 * `pyscFilteredViewerLibrary.py` -- this is the main library, which all the other scripts will use.  Not intended for being run directly as a PythonScript script (though it will actually behave similarly to `pyscFilteredViewer.py` if run standalone, except will turn on copious debug information)
-* `pyscfvEditConfig.py` -- running this script will load the `psycFilteredViewer.ini` file, and allow you to edit it (see **Configuration**, below)
-* `pyscFilteredViewer.py` -- running this script will do a one-time filter of the active file (see **One-Time Filtering**, below)
-* `pyscfvRegisterFilterOnSave.py` -- this will set up Notepad++ to run the filter any time any file is saved (see **Filter On Save**, below)
-* `pyscfvUnRegisterFilterOnSave.py` -- this will stop Notepad++ from running the filter any time any file is saved (see **Filter On Save**, below)
+* `pyscfvEditConfig.py` -- running this script will load the `psycFilteredViewer.ini` file, and allow you to edit it (see [**Configuration**](#configuration), below)
+* `pyscFilteredViewer.py` -- running this script will do a one-time filter of the active file (see [**One-time Filtering**](#one-time-filtering), below)
+* `pyscfvRegisterFilterOnSave.py` -- this will set up Notepad++ to run the filter any time any file is saved (see [**Filter On Save**](#filter-on-save), below)
+* `pyscfvUnRegisterFilterOnSave.py` -- this will stop Notepad++ from running the filter any time any file is saved (see [**Filter On Save**](#filter-on-save), below)
 
 ## Configuration
 
