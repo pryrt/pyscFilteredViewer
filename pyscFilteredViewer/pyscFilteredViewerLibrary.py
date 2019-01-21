@@ -322,8 +322,8 @@ def pyscfv_Register_FilterOnSave():
     if __pyscfv_DEBUG: console.write('Tempfiles at end of Register FilterOnSave = {}\n'.format(pyscfv_Callback_FilterOnSave.tmpfiles))
 
     # notify the UI that it's registered
-    fileLangName = notepad.getLanguageName(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
-    notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, '{} - [[{}]]'.format( fileLangName, 'FilteredViewer FilterOnSave ON'))
+    fileLangDesc = notepad.getLanguageDesc(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
+    notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, '{} - [[{}]]'.format( fileLangDesc, 'FilteredViewer FilterOnSave ON'))
 
 def pyscfv_UnRegister_FilterOnSave():
     """UnRegisters the pyscfv_FilterOnSave function for the FILESAVED event"""
@@ -333,9 +333,9 @@ def pyscfv_UnRegister_FilterOnSave():
 
     pyscfv_Callback_FilterOnSave.tmpfiles = []
 
-    # notify the UI that it's registered
-    fileLangName = notepad.getLanguageName(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
-    notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, fileLangName )
+    # notify the UI that it's unregistered
+    fileLangDesc = notepad.getLanguageDesc(notepad.getCurrentLang())    # converts LANGTYPE to the official status-bar string for the selected language
+    notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, fileLangDesc )
 
 def pyscfv_Toggle_FilterOnSave():
     """Toggles whether or not the FilterOnSave function is active (registered)"""
@@ -374,8 +374,8 @@ def pyscfv_Callback_FilterOnSave(kwargs):
     if __pyscfv_DEBUG: console.write('Tempfiles at end of Callback FilterOnSave = {}\n'.format(pyscfv_Callback_FilterOnSave.tmpfiles))
 
     # notify the UI that it's still running under FilterOnSave
-    fileLangName = notepad.getLanguageName(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
-    notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, '{} - [[{}]]'.format( fileLangName, 'FilteredViewer FilterOnSave ON'))
+    fileLangDesc = notepad.getLanguageDesc(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
+    notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, '{} - [[{}]]'.format( fileLangDesc, 'FilteredViewer FilterOnSave ON'))
 
     return
 
