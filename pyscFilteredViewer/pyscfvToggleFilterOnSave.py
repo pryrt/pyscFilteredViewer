@@ -8,4 +8,5 @@ d = dirname(__file__)
 if not d in sys.path:
     sys.path.append(dirname(__file__))
 
-pyscFilteredViewerLibrary.pyscfv_EditConfig()
+pyscFilteredViewerLibrary.pyscfv_setDebug(False)
+pyscFilteredViewerLibrary.pyscfv_Toggle_FilterOnSave()

@@ -8,10 +8,4 @@ d = dirname(__file__)
 if not d in sys.path:
     sys.path.append(dirname(__file__))
 
-# load or reload (in case it's changed)
-if 'pyscFilteredViewerLibrary' in globals():
-    reload(pyscFilteredViewerLibrary)
-else:
-    import pyscFilteredViewerLibrary
-
 pyscFilteredViewerLibrary.pyscfv_FilteredViewer()

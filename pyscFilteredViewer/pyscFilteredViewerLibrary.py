@@ -325,7 +325,6 @@ def pyscfv_Register_FilterOnSave():
     fileLangName = notepad.getLanguageName(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
     notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, '{} - [[{}]]'.format( fileLangName, 'FilteredViewer FilterOnSave ON'))
 
-
 def pyscfv_UnRegister_FilterOnSave():
     """UnRegisters the pyscfv_FilterOnSave function for the FILESAVED event"""
     if __pyscfv_DEBUG: console.write('UnRegister_FilterOnSave()\n')
@@ -337,6 +336,18 @@ def pyscfv_UnRegister_FilterOnSave():
     # notify the UI that it's registered
     fileLangName = notepad.getLanguageName(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
     notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, fileLangName )
+
+def pyscfv_Toggle_FilterOnSave():
+    """Toggles whether or not the FilterOnSave function is active (registered)"""
+    if not hasattr(pyscfv_Callback_FilterOnSave, 'configDict'):
+        if __pyscfv_DEBUG: console.writeError('DNE: so register'+'\n')
+        pyscfv_Register_FilterOnSave()
+    elif pyscfv_Callback_FilterOnSave.configDict is None:
+        if __pyscfv_DEBUG: console.writeError('None: so register'+'\n')
+        pyscfv_Register_FilterOnSave()
+    else:
+        if __pyscfv_DEBUG: console.writeError('Found: so unregister'+'\n')
+        pyscfv_UnRegister_FilterOnSave()
 
 def pyscfv_Callback_FilterOnSave(kwargs):
     """This is the callback for when you want to filter on save events"""
@@ -371,3 +382,13 @@ def pyscfv_Callback_FilterOnSave(kwargs):
 if __name__=='__main__':
     pyscfv_setDebug(True)
     pyscfv_FilteredViewer()
+
+# if I need a debug version of one of the helper scripts (ie, I made changes to pyscFilteredViewerLibrary.py during development)
+############################################
+## load or reload (in case it's changed)
+#if 'pyscFilteredViewerLibrary' in globals():
+#    reload(pyscFilteredViewerLibrary)
+#else:
+#    import pyscFilteredViewerLibrary
+############################################
+
