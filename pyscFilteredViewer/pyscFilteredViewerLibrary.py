@@ -340,13 +340,13 @@ def pyscfv_UnRegister_FilterOnSave():
 def pyscfv_Toggle_FilterOnSave():
     """Toggles whether or not the FilterOnSave function is active (registered)"""
     if not hasattr(pyscfv_Callback_FilterOnSave, 'configDict'):
-        if __pyscfv_DEBUG: console.writeError('DNE: so register'+'\n')
+        if __pyscfv_DEBUG: console.write('TOGGLE: DNE: so register'+'\n')
         pyscfv_Register_FilterOnSave()
     elif pyscfv_Callback_FilterOnSave.configDict is None:
-        if __pyscfv_DEBUG: console.writeError('None: so register'+'\n')
+        if __pyscfv_DEBUG: console.write('TOGGLE: None: so register'+'\n')
         pyscfv_Register_FilterOnSave()
     else:
-        if __pyscfv_DEBUG: console.writeError('Found: so unregister'+'\n')
+        if __pyscfv_DEBUG: console.write('TOGGLE: Found: so unregister'+'\n')
         pyscfv_UnRegister_FilterOnSave()
 
 def pyscfv_Callback_FilterOnSave(kwargs):
