@@ -1,4 +1,4 @@
-# pyscFilteredViewer
+# ⇒💾⇒ pyscFilteredViewer
 Runs files through filter to their default associated action with OnSave event (or on request) [for Notepad++ using PythonScript]
 
 ## Table of Contents
@@ -50,6 +50,7 @@ I have kept the configuration file compatbile with PreviewHTML's `filters.ini` -
 * `pyscFilteredViewerLibrary.py` -- this is the main library, which all the other scripts will use.  Not intended for being run directly as a PythonScript script (though it will actually behave similarly to `pyscFilteredViewer.py` if run standalone, except will turn on copious debug information)
 * `pyscfvEditConfig.py` -- running this script will load the `psycFilteredViewer.ini` file, and allow you to edit it (see [**Configuration**](#configuration), below)
 * `pyscFilteredViewer.py` -- running this script will do a one-time filter of the active file (see [**One-time Filtering**](#one-time-filtering), below)
+* `pyscfvToggleFilterOnSave.py` -- running this script will toggle between running the filter any time the file is saved and not running it (equivalent to choosing the correct version of pyscfvRegisterFilterOnSave or pyscfvUnRegisterFilterOnSave) (see [**Filter On Save**](#filter-on-save), below)
 * `pyscfvRegisterFilterOnSave.py` -- this will set up Notepad++ to run the filter any time any file is saved (see [**Filter On Save**](#filter-on-save), below)
 * `pyscfvUnRegisterFilterOnSave.py` -- this will stop Notepad++ from running the filter any time any file is saved (see [**Filter On Save**](#filter-on-save), below)
 
@@ -86,6 +87,8 @@ The default configuration file looks something like:
 
 If you want to be able to use one or more of these scripts with a keyboard shortcut, use the **Plugins > PythonScript > Configuration...** dialog to add the script(s) to the **Menu items** list, then **Settings > Shortcut Mapper > Plugin Commands**, filter for **Python**, and edit the keyboard shortcut for the appropriate script(s).
 
+Once you are ready to replace PreviewHTML with `pyscFilteredViewer`, I highly recommend mapping the PreviewHTML shortcut (`Ctrl+H`) to `pyscfvToggleFilterOnSave` (see [**Filter On Save**](#filter-on-save), below).
+
 ## One-time Filtering
 
 This will take the active file, filter it as defined in the **Configuration**, and the resulting filtered file will be displayed in your default browser.  With one-time filtering, it will immediately delete the temporary HTML file -- so if you try to hit RELOAD or REFRESH in your browser or viewer, it won't find the file.  To reload the file, you will need to close the old version in your viewer, and re-run the one-time filter from Notepad++.
@@ -95,6 +98,10 @@ This will take the active file, filter it as defined in the **Configuration**, a
 If you want to keep updating the filtered file (usually HTML) every time you change the source, you need to "register" the FilterOnSave action, using the `pyscfvRegisterFilterOnSave` script.  This will register a "hook" such that every time Notepad++ saves a file, it will run the filter.  If the filter hasn't been run on this file yet, it will launch the filtered file in the appropriate viewer.  If the filter had been run on this file before, then **you** will have to move to the viewer (usually, the web browser) and refresh the appropriate page (or find a browser or viewer that can watch for changes in the file, and automatically refresh itself).
 
 Once you are done (or want to be able to edit and save files without having the filter run every time), you can use `pyscfvUnRegisterFilterOnSave` to un-register / un-hook the filter from the file-save event.
+
+As an easier interface (and the one I recommend), you can use the `pyscfvToggleFilterOnSave` script to automatically determine whether it should enable or disable the FilterOnSave.  Using this script to toggle filtering to the temporary file is the most like the PreviewHTML behavior, and it's the script I have associated with PreviewHTML's `Ctrl+H` keyboard shortcut.
+
+As a bonus feature, to help you keep track of whether or not the filter is on, the Status Bar will be edited to show `⇒💾⇒` before the Language name when the live filter is active, and will remove that prefix when the filtering is turned off.
 
 * The manual refresh in the viewer/browser is a known compromise in the switch from PreviewHTML to pyscFilteredViewer: there may be a way to cause your viewer (browser) to reload/refresh the appropriate file, but it wasn't immediately obvious.  As a workaround, you may be able to define your filter to include the `<meta refresh>` tag in the resulting HTML, which might work for a local file to cause refresh as often as you want; I do not guarantee that this workaround work for you.
 
