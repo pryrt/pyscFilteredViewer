@@ -322,8 +322,16 @@ def pyscfv_Register_FilterOnSave():
     if __pyscfv_DEBUG: console.write('Tempfiles at end of Register FilterOnSave = {}\n'.format(pyscfv_Callback_FilterOnSave.tmpfiles))
 
     # notify the UI that it's registered
+    pyscfv_OverrideStatusBar(True)
+
+def pyscfv_OverrideStatusBar(filterIsOn):
+    """if filterIsOn, override status bar to indicate filter, otherwise return to default status bar"""
     fileLangDesc = notepad.getLanguageDesc(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
-    notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, '{} - [[{}]]'.format( fileLangDesc, 'FilteredViewer FilterOnSave ON'))
+    if filterIsOn:
+        strStatusBar =  u'{} {}'.format( u'\u00A0\u21D2\U0001F4BE\u21D2\u00A0', fileLangDesc )      # ⇒💾⇒ TYPE
+    else:
+        strStatusBar =  u'{}'.format( fileLangDesc )                                                # TYPE
+    notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, strStatusBar.encode('utf8'))
 
 def pyscfv_UnRegister_FilterOnSave():
     """UnRegisters the pyscfv_FilterOnSave function for the FILESAVED event"""
@@ -334,8 +342,7 @@ def pyscfv_UnRegister_FilterOnSave():
     pyscfv_Callback_FilterOnSave.tmpfiles = []
 
     # notify the UI that it's unregistered
-    fileLangDesc = notepad.getLanguageDesc(notepad.getCurrentLang())    # converts LANGTYPE to the official status-bar string for the selected language
-    notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, fileLangDesc )
+    pyscfv_OverrideStatusBar(False)
 
 def pyscfv_Toggle_FilterOnSave():
     """Toggles whether or not the FilterOnSave function is active (registered)"""
@@ -373,9 +380,8 @@ def pyscfv_Callback_FilterOnSave(kwargs):
 
     if __pyscfv_DEBUG: console.write('Tempfiles at end of Callback FilterOnSave = {}\n'.format(pyscfv_Callback_FilterOnSave.tmpfiles))
 
-    # notify the UI that it's still running under FilterOnSave
-    fileLangDesc = notepad.getLanguageDesc(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
-    notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, '{} - [[{}]]'.format( fileLangDesc, 'FilteredViewer FilterOnSave ON'))
+    # notify the UI that it's registered
+    pyscfv_OverrideStatusBar(True)
 
     return
 
