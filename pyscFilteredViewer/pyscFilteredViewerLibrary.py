@@ -328,7 +328,7 @@ def pyscfv_OverrideStatusBar(filterIsOn):
     """if filterIsOn, override status bar to indicate filter, otherwise return to default status bar"""
     fileLangDesc = notepad.getLanguageDesc(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
     if filterIsOn:
-        strStatusBar =  u'{} {}'.format( u'\u00A0\u21D2\U0001F4BE\u21D2\u00A0', fileLangDesc )      # ⇒💾⇒ TYPE
+        strStatusBar =  u'{} {}'.format( u'\u00A0⇉📺⇉\u00A0', fileLangDesc )                         # ⇉📺⇉ TYPE
     else:
         strStatusBar =  u'{}'.format( fileLangDesc )                                                # TYPE
     notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, strStatusBar.encode('utf8'))
