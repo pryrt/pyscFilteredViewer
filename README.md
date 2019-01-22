@@ -1,4 +1,4 @@
-# ⇒💾⇒ pyscFilteredViewer
+# ⇉📺⇉ pyscFilteredViewer
 Runs files through filter to their default associated action with OnSave event (or on request) [for Notepad++ using PythonScript]
 
 ## Table of Contents
@@ -101,7 +101,7 @@ Once you are done (or want to be able to edit and save files without having the 
 
 As an easier interface (and the one I recommend), you can use the `pyscfvToggleFilterOnSave` script to automatically determine whether it should enable or disable the FilterOnSave.  Using this script to toggle filtering to the temporary file is the most like the PreviewHTML behavior, and it's the script I have associated with PreviewHTML's `Ctrl+H` keyboard shortcut.
 
-As a bonus feature, to help you keep track of whether or not the filter is on, the Status Bar will be edited to show `⇒💾⇒` before the Language name when the live filter is active, and will remove that prefix when the filtering is turned off.
+As a bonus feature, to help you keep track of whether or not the filter is on, the Status Bar will be edited to show `⇉📺⇉` before the Language name when the live filter is active, and will remove that prefix when the filtering is turned off.
 
 * The manual refresh in the viewer/browser is a known compromise in the switch from PreviewHTML to pyscFilteredViewer: there may be a way to cause your viewer (browser) to reload/refresh the appropriate file, but it wasn't immediately obvious.  As a workaround, you may be able to define your filter to include the `<meta refresh>` tag in the resulting HTML, which might work for a local file to cause refresh as often as you want; I do not guarantee that this workaround work for you.
 
