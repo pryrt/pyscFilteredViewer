@@ -36,7 +36,7 @@ I have kept the configuration file compatbile with PreviewHTML's `filters.ini` -
         * "machine scripts" (visible to all users) would be installed under the `notepad++.exe` install-directory, in `plugins\PythonScript\scripts\ `
         * "user scripts" (visible to the current user) would be installed under `%AppData%\Notepad++\plugins\config\PythonScript\scripts `
     * Notepad 7.6.0 and 7.6.1 were in a state of flux, and I do not recommended trying to install these scripts under those Notepad++ versions.
-    * under Notepad++ 7.6.2 and later: I believe they go xxx and yyy, but do not know for sure
+    * under Notepad++ 7.6.2:
         * "machine scripts": the `notepad++.exe` install-directory
         * "user scripts": `%AppData%\Notepad++\plugins\config\PythonScript\scripts ` and/or `%ProgramData%\notepad++\plugins\config\PythonScript\scripts `
     * either of these should create a `pyscFilteredViewer\ ` subdirectory, with appropriate scripts (described in [**Scripts**](#scripts), below)
