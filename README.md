@@ -115,4 +115,4 @@ Some day, there may be:
 
 * ability to filter to something other than HTML -- it's almost there... it just defaults the name to .html; if I make the filtered-extension configurable, then everything else should just come out nicely in the wash
 
-Feel free to make feature suggestions and bug reports.  I do not guarantee they will make it in, but if I can think of a way to do it (or if you help with the development), there's a good chance I'll incorporate it.
+Feel free to make [feature suggestions and bug reports](https://github.com/pryrt/pyscFilteredViewer/issues).  I do not guarantee they will make it in, but if I can think of a way to do it (or if you help with the development), there's a good chance I'll incorporate it.
