@@ -6,7 +6,7 @@ import sys
 from os.path import dirname             # https://stackoverflow.com/a/3144107/5508606
 d = dirname(__file__)
 if not d in sys.path:
-    sys.path.append(dirname(__file__))
+    sys.path.append(d)
 
 import pyscFilteredViewerLibrary
 pyscFilteredViewerLibrary.pyscfv_EditConfig()
