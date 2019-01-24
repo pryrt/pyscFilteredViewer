@@ -79,6 +79,8 @@ The default configuration file looks something like:
 * **Command**: this is the command to use to filter the file into HTML.
     * To reference the filename of the source file (ie, the file that's in Notepad++), use `%1`.  Since the file's path and or name may have a space, it is highly recommended to always enclose it in quotes, as `"%1"`
     * The path to the command (executable, batch file, or anything else "runnable" from a Windows perspective) should be spelled out, as it is likely not in your PATH
+    * This command should take the name of a file as the command-line argument, and should output HTML to `STDOUT`.
+    * This is not the browser (or other viewer) command.  The viewer used is based on your Windows settings, whatever the default / open "action" is for the HTML file type (usually your default web browser).
     * example ⇒ `Command=C:\usr\local\scripts\preview-ini.bat "%1"`
 
 **NOTE**: you technically only need one of either **Language** or **Extension**, since one is usually enough to define a file-type.  But if both are defined, pyscFilteredViewer will first try to match on **Language**, and then on **Extension**.
