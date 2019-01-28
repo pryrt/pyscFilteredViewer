@@ -65,11 +65,18 @@ The configuration file is used to set the filter-command on a per-file-type basi
 The default configuration file looks something like:
 
     ; pyscFilteredViewer Config File (compatible with PreviewHTML Filters.ini file)
-    ;Lines starting with ; are comments -- you need to uncomment them, or create a new section with the similar uncommented format as the example below:
-    ;[IniFile]                                          ;   => this is the name of the section; it must be unique.  Typically, based on the language
-    ;Extension=.ini .cfg                                ;   => space-separated list of filename extensions, including the period.
-    ;Language=INI                                       ;   => this is the name of the language (from Notepad++'s perspective): for a UDL, use your "UserName" from the UDL dialog
-    ;Command=C:\usr\local\scripts\preview-ini.bat "%1"  ;   => this is the filter command; %1 is the name of the active file/buffer; the command must result in the HTML being dumped to STDOUT
+    ; Everything after ; are comments, and will help you read/understand the ini file
+    [IniFile]                                          ;   => this is the name of the section; it must be unique.  Typically, based on the language
+    Extension=.ini .cfg                                ;   => space-separated list of filename extensions, including the period.
+    Language=INI                                       ;   => this is the name of the language (from Notepad++'s perspective): for a UDL, use your "UserName" from the UDL dialog
+    ; the 'Command=' line below is the filter command;
+    ;   the first part of the command should be the full path to the command
+    ;       if it has spaces in the path, it MUST have quotes around it
+    ;       if it does not have spaces in the path, it still MAY have quotes around it
+    ;   %1 is the name of the active file/buffer; it is in quotes "%1" because the path might contain spaces, and windows needs the quotes to know it's a single filename
+    ;   the command must result in the HTML being dumped to STDOUT
+    Command="%AppData%\Notepad++\Plugins\Config\pyscFilteredViewer\ExampleConverterCommand.bat" "%1"
+    ; this example command just wraps the text of the INI file in HTML XMP tags, so the browser will render it as plaintext inside an HTML file
 
 * **[SECTION]**: each section in the config file is a logical grouping, which will define the filter command for a given file-type. The section name chosen is irrelevant, as long as it is unique.  It is recommended that it be similar to the **Language** setting
     * example ⇒ `[IniFile]`
