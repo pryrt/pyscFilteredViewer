@@ -271,13 +271,23 @@ def pyscfv_establishConfigFile():
     if not os.path.exists(pyscfvini):
         # create a new dummy
         if __pyscfv_DEBUG: console.write("TODO = create new dummy ini file\n")
+        bat = os.path.normpath( os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ExampleConverterCommand.bat'))
+        if not os.path.exists(bat):
+            pyscFilteredViewer_Exception( 'Could not find example file-converter, which should have been bundled with pyscFilteredViewer, at "{}"\n'.format(bat) )
         with open(pyscfvini, 'wt', 0) as f:
-            f.write("""; pyscFilteredViewer Config File (compatible with PreviewHTML Filters.ini file)
-;Lines starting with ; are comments -- you need to uncomment them, or create a new section with the similar uncommented format as the example below:
-;[IniFile]                                          ;   => this is the name of the section; it must be unique.  Typically, based on the language
-;Extension=.ini .cfg                                ;   => space-separated list of filename extensions, including the period.
-;Language=INI                                       ;   => this is the name of the language (from Notepad++'s perspective): for a UDL, use your "UserName" from the UDL dialog
-;Command=C:\usr\local\scripts\preview-ini.bat "%1"  ;   => this is the filter command; %1 is the name of the active file/buffer; the command must result in the HTML being dumped to STDOUT""")
+            f.write('''; pyscFilteredViewer Config File (compatible with PreviewHTML Filters.ini file)
+; Everything after ; are comments, and will help you read/understand the ini file
+[IniFile]                                          ;   => this is the name of the section; it must be unique.  Typically, based on the language
+Extension=.ini .cfg                                ;   => space-separated list of filename extensions, including the period.
+Language=INI                                       ;   => this is the name of the language (from Notepad++'s perspective): for a UDL, use your "UserName" from the UDL dialog
+; the 'Command=' line below is the filter command;
+;   the first part of the command should be the full path to the command
+;       if it has spaces in the path, it MUST have quotes around it
+;       if it does not have spaces in the path, it still MAY have quotes around it
+;   %1 is the name of the active file/buffer; it is in quotes "%1" because the path might contain spaces, and windows needs the quotes to know it's a single filename
+;   the command must result in the HTML being dumped to STDOUT
+Command="{}" "%1"
+; this example command just wraps the text of the INI file in HTML XMP tags, so the browser will render it as plaintext inside an HTML file'''.format(bat))
 
     # final check for ini file existing
     if not os.path.exists(pyscfvini):
