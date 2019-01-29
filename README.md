@@ -27,7 +27,7 @@ This is useful for code that has embedded documentation that can be easily extra
 
 ### Installation Procedure
 
-1. Download the [latest release](https://github.com/pryrt/pyscFilteredViewer/releases/latest).
+1. Download the [latest release](https://github.com/pryrt/pyscFilteredViewer/releases/latest) of pyscFilteredViewer.
 2. Extract the `pyscFilteredViewer` folder from the zipfile into the PythonScript `scripts\` location:
     * `%AppData%\Notepad++\plugins\config\PythonScript\scripts\pyscFilteredViewer\ ` is the most common location.
     * If you have a portable version of Notepad++, or if you want these scripts to be available to all users on the machine, rather than just the current user, please see [docs/AlternateInstall.md](docs/AlternateInstall.md)
