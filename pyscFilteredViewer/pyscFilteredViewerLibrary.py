@@ -50,7 +50,7 @@ def pyscfv_setDebug(flag):
         console.show()
         console.clear()
 
-__pyscfv_KEEPTEMP = False
+__pyscfv_KEEPTEMP = True
 def pyscfv_setKeepTemp(flag):
     """sets the KEEPTEMP flag either true or false
 
@@ -58,6 +58,17 @@ def pyscfv_setKeepTemp(flag):
     (this will allow hooking into callbacks, and similar )"""
     global __pyscfv_KEEPTEMP
     __pyscfv_KEEPTEMP = flag
+
+def pyscfv_cleanTempDir():
+    # console.write("cleaning\n")
+    folder = os.path.normpath( os.path.join( tempfile.gettempdir(), 'pyscFilteredViewer' ) )
+    if not os.path.exists(folder):
+        os.mkdir(folder)
+    for f in os.listdir(folder):
+        full = os.path.normpath( os.path.join( folder, f ) )
+        if os.path.isfile( full ):
+            console.write("DEBUG: deleting '{}'\n".format(full))
+            os.unlink(full)
 
 class SafeRawConfigParser(ConfigParser.RawConfigParser):
     """"SafeRawConfigParser will give the 'safe' version of .set() method to the RawConfigParser, without the %-interpolations of ConfigParser or SafeConfigParser"""
@@ -216,7 +227,11 @@ def pyscfv_filter_file(cmd, src_fname):
 
     #ext = 'html'
     #f = tempfile.NamedTemporaryFile(mode='wt', suffix='.'+ext, delete=False)
-    dst_path = os.path.normpath( os.path.join( tempfile.gettempdir(), '.'.join(('{:08X}'.format(c32), os.path.basename(src_fname), 'FILTERED', 'html')) ) )
+    dst_path = os.path.normpath( os.path.join( tempfile.gettempdir(), 'pyscFilteredViewer', '.'.join(('{:08X}'.format(c32), os.path.basename(src_fname), 'FILTERED', 'html')) ) )
+    parent = os.path.dirname(dst_path)
+    if not os.path.exists(parent):
+        os.mkdir(parent)
+
     f = open(dst_path, mode='wt')
 
 
@@ -395,6 +410,10 @@ def pyscfv_Callback_FilterOnSave(kwargs):
 
     return
 
+# when i first load the library, clean out the tempdir
+pyscfv_cleanTempDir()
+
+# if it's launched in main-mode, rather than imported, use the debug single filter
 if __name__=='__main__':
     pyscfv_setDebug(True)
     pyscfv_FilteredViewer()
@@ -407,4 +426,3 @@ if __name__=='__main__':
 #else:
 #    import pyscFilteredViewerLibrary
 ############################################
-
