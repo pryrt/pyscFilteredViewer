@@ -52,7 +52,7 @@ def pyscfv_setDebug(flag):
         console.clear()
     if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_setDebug({})\n'.format(flag))
 
-__pyscfv_TRACE = True
+__pyscfv_TRACE = False
 def pyscfv_setTrace(flag):
     """sets the TRACE flag either true or false
 
