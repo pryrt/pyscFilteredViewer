@@ -52,7 +52,7 @@ def pyscfv_setDebug(flag):
         console.clear()
     if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_setDebug({})\n'.format(flag))
 
-__pyscfv_TRACE = False
+__pyscfv_TRACE = True
 def pyscfv_setTrace(flag):
     """sets the TRACE flag either true or false
 
@@ -385,6 +385,8 @@ def pyscfv_Register_FilterOnSave():
 
     # register the callback
     notepad.callback(pyscfv_Callback_FilterOnSave, [NOTIFICATION.FILESAVED])
+    # added secondary callback to keep the icon present
+    notepad.callback(pyscfv_Callback_BufferActivated_OverrideStatusBar, [NOTIFICATION.BUFFERACTIVATED])
 
     if __pyscfv_DEBUG: console.write('Tempfiles at end of Register FilterOnSave = {}\n'.format(pyscfv_Callback_FilterOnSave.tmpfiles))
 
@@ -406,6 +408,7 @@ def pyscfv_UnRegister_FilterOnSave():
     if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_UnRegister_FilterOnSave()\n')
     pyscfv_Callback_FilterOnSave.configDict = None
     notepad.clearCallbacks(pyscfv_Callback_FilterOnSave)
+    notepad.clearCallbacks(pyscfv_Callback_BufferActivated_OverrideStatusBar) # secondary callback to keep the icon present
 
     pyscfv_Callback_FilterOnSave.tmpfiles = []
 
@@ -452,6 +455,11 @@ def pyscfv_Callback_FilterOnSave(kwargs):
     # notify the UI that it's registered
     pyscfv_OverrideStatusBar(True)
 
+    return
+
+def pyscfv_Callback_BufferActivated_OverrideStatusBar(kwargs):
+    """This callback will be run when a buffer is activated to override the status bar"""
+    pyscfv_OverrideStatusBar(True)
     return
 
 # when i first load the library, clean out the tempdir
