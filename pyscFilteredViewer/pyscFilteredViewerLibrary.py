@@ -24,7 +24,6 @@ aka: make a PythonScript replacement for PreviewHTML.dll that uses the browser i
     * done: If you run pyscFilteredViewerLibrary.py directory, it will turn on debug prints and show the console, but run the same code.
 
 LONG TERM TODO:
-    future option: allow it to keep the temporary              :config(DEFAULT, 'KeepFilteredOutput')
     future option: allow destination formats other than HTML   :config(section, 'FilterOutputType')
     future option: allow executing alternate verbs             :config(section, 'ViewerCommand' or 'ViewerVerb')
 """
@@ -65,16 +64,6 @@ def pyscfv_setTrace(flag):
         console.show()
         console.clear()
     if __pyscfv_TRACE: console.write('pyscfv_setTrace()\n')
-
-__pyscfv_KEEPTEMP = True
-def pyscfv_setKeepTemp(flag):
-    """sets the KEEPTEMP flag either true or false
-
-    KEEPTEMP mode on will not delete the temporary file when done
-    (this will allow hooking into callbacks, and similar )"""
-    global __pyscfv_KEEPTEMP
-    __pyscfv_KEEPTEMP = flag
-    if __pyscfv_TRACE: console.write('pyscfv_setKeepTemp()\n')
 
 def pyscfv_cleanTempDir():
     """cleans out the tempdir()/pyscFilteredViewer subdir, creating it if it doesn't already exist"""
@@ -233,8 +222,8 @@ def pyscfv_diplayFilteredOutput(cDict, section, ext='html', skipLaunch=False):
     if section is None:
         tempFile = __pyscfv_message_as_html(__pyscfv_MESSAGE, 'editConfig')
         pyscfv_launch_default_app(tempFile)
+        __pyscfv_MESSAGE = '' # clear the message
         return tempFile
-        #was: raise pyscFilteredViewer_Exception('There is no appropriate section found.  Programmer should have exited earlier in the flow')
 
 
     # ensure it has a filter command
@@ -378,9 +367,6 @@ def pyscfv_FilteredViewer():
     if section is None: return
     tmpfile    = pyscfv_diplayFilteredOutput(configDict, section)
     if tmpfile is None: return
-    if os.path.exists(tmpfile) and not(__pyscfv_KEEPTEMP):
-        sleep(3)                # give it time to load
-        os.unlink(tmpfile)
     return
 
 def pyscfv_Register_FilterOnSave():
@@ -452,7 +438,6 @@ def pyscfv_Callback_FilterOnSave(kwargs):
 
     # grab section for current file
     section    = pyscfv_pickSectionBasedOnActiveFile(pyscfv_Callback_FilterOnSave.configDict, False)
-    # was: if section is None: return pyscfv_UnRegister_FilterOnSave()
 
     # re-filter the file once without displaying (logic for displaying was easier later)
     tmpfile = pyscfv_diplayFilteredOutput(pyscfv_Callback_FilterOnSave.configDict, section, skipLaunch=True)
