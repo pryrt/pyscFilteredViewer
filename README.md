@@ -38,7 +38,7 @@ This is useful for code that has embedded documentation that can be easily extra
 
 ### Scripts
 
-* `pyscFilteredViewerLibrary.py` -- this is the main library, which all the other scripts will use.  Not intended for being run directly as a PythonScript script (though it will actually behave similarly to `pyscFilteredViewer.py` if run standalone, except will turn on copious debug information)
+* `pyscFilteredViewerLibrary.py` -- this is the main library, which all the other scripts will use.  Not intended for being run directly as a PythonScript script
 * `pyscfvEditConfig.py` -- running this script will load the `psycFilteredViewer.ini` file, and allow you to edit it (see [**Configuration**](#configuration), below)
 * `pyscFilteredViewer.py` -- running this script will do a one-time filter of the active file (see [**One-time Filtering**](#one-time-filtering), below)
 * `pyscfvToggleFilterOnSave.py` -- running this script will toggle between running the filter any time the file is saved and not running it (equivalent to choosing the correct version of pyscfvRegisterFilterOnSave or pyscfvUnRegisterFilterOnSave) (see [**Filter On Save**](#filter-on-save), below)
