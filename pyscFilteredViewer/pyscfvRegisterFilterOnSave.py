@@ -9,5 +9,4 @@ if not d in sys.path:
     sys.path.append(d)
 
 import pyscFilteredViewerLibrary
-pyscFilteredViewerLibrary.pyscfv_setDebug(False)
 pyscFilteredViewerLibrary.pyscfv_Register_FilterOnSave()

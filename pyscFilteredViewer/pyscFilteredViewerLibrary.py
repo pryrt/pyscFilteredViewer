@@ -36,6 +36,8 @@ import subprocess
 import string
 from time import sleep
 
+__pyscfv_MESSAGE = ''
+
 __pyscfv_DEBUG = False
 def pyscfv_setDebug(flag):
     """sets the DEBUG flag either true or false
@@ -49,6 +51,20 @@ def pyscfv_setDebug(flag):
     if flag:
         console.show()
         console.clear()
+    if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_setDebug({})\n'.format(flag))
+
+__pyscfv_TRACE = False
+def pyscfv_setTrace(flag):
+    """sets the TRACE flag either true or false
+
+    TRACE mode on will print to the Notepad++ PythonScript Python-Console
+    every time it enters a pysc function"""
+    global __pyscfv_TRACE
+    __pyscfv_TRACE = flag
+    if flag:
+        console.show()
+        console.clear()
+    if __pyscfv_TRACE: console.write('pyscfv_setTrace()\n')
 
 __pyscfv_KEEPTEMP = True
 def pyscfv_setKeepTemp(flag):
@@ -58,9 +74,11 @@ def pyscfv_setKeepTemp(flag):
     (this will allow hooking into callbacks, and similar )"""
     global __pyscfv_KEEPTEMP
     __pyscfv_KEEPTEMP = flag
+    if __pyscfv_TRACE: console.write('pyscfv_setKeepTemp()\n')
 
 def pyscfv_cleanTempDir():
-    # console.write("cleaning\n")
+    """cleans out the tempdir()/pyscFilteredViewer subdir, creating it if it doesn't already exist"""
+    if __pyscfv_TRACE: console.write('pyscfv_cleanTempDir()\n')
     folder = os.path.normpath( os.path.join( tempfile.gettempdir(), 'pyscFilteredViewer' ) )
     if not os.path.exists(folder):
         os.mkdir(folder)
@@ -91,11 +109,13 @@ class pyscFilteredViewer_Exception(Exception):
 
 def pyscfv_EditConfig():
     """open the config ini for editing in Notepad++"""
+    if __pyscfv_TRACE: console.write('pyscfv_EditConfig()\n')
     cfgfile = pyscfv_establishConfigFile()
     notepad.open( cfgfile )
 
 def pyscfv_warningMessage(message, title, doEditConfig=False):
     """This is a non-fatal error message.  It is printed to the PythonScript console, and a message box is created"""
+    if __pyscfv_TRACE: console.write('pyscfv_warningMessage()\n')
     console.writeError( "\n\n{}\n{}\n\n{}\n".format(title, '-'*40, message) )
     notepad.messageBox( message, title, MESSAGEBOXFLAGS.OK | MESSAGEBOXFLAGS.ICONWARNING)
     if doEditConfig:
@@ -103,6 +123,7 @@ def pyscfv_warningMessage(message, title, doEditConfig=False):
 
 def pyscfv_readFiltersIni():
     """This reads the PreviewHTML-style filters.ini file, and returns the ConfigParser object"""
+    if __pyscfv_TRACE: console.write('pyscfv_readFilteresIni()\n')
     config = SafeRawConfigParser()    # https://docs.python.org/2/library/configparser.html
     cfgfile = pyscfv_establishConfigFile()
     if __pyscfv_DEBUG: console.write('cfgfile="{}"\n'.format(cfgfile))
@@ -115,6 +136,7 @@ def pyscfv_parseConfig(config):
 
     Also might make a reverse map for extensions and for languages
     """
+    if __pyscfv_TRACE: console.write('pyscfv_parseConfig()\n')
 
     deep = dict(config=None, languages={}, extensions={})
 
@@ -139,13 +161,14 @@ def pyscfv_parseConfig(config):
 
     return deep
 
-def pyscfv_pickSectionBasedOnActiveFile(cfgDict):
+def pyscfv_pickSectionBasedOnActiveFile(cfgDict, edit_config_on_fail = False):
     """pick the appropriate configuration section, based on the cfgDict's reverse-maps, and the currently-active file in Notepad++"""
+    if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_pickSectionBasedOnActiveFile()\n')
     # this is basically MakeChoiceBasedOnLanguage.py
     fileName = notepad.getCurrentFilename()                 # filename of the current buffer
     fileLangEnum = notepad.getCurrentLang()                 # gets the LANGTYPE enum for the current buffer
     fileLangName = notepad.getLanguageName(fileLangEnum)    # converts LANGTYPE to the official string for the selected language
-    if __pyscfv_DEBUG: console.write('pyscfv_pickSectionBasedOnActiveFile:\n\tfile = "{}"\n\tlanguage = "{}"\n\tlanguage name = "{}"\n'.format( fileName, fileLangEnum, fileLangName ))
+    if __pyscfv_DEBUG: console.write('\tfile = "{}"\n\tlanguage = "{}"\n\tlanguage name = "{}"\n'.format( fileName, fileLangEnum, fileLangName ))
     if fileLangEnum is LANGTYPE.USER:                       # UDL will have fileLangName = "udf - UdlLanguageName"
         fileLangName = (fileLangName.split(' - '))[1]       # grab the specific UdlLanguageName
         if __pyscfv_DEBUG: console.write('\tUDL = "{}"\n'.format( fileLangName ) )
@@ -168,11 +191,16 @@ def pyscfv_pickSectionBasedOnActiveFile(cfgDict):
     errmsg = errmsg + '    Language={}\n'.format(fileLangName)
     errmsg = errmsg + '    Extension={}\n'.format(fileExt)
     errmsg = errmsg + '    Command={}\n'.format(r'c:\some\path\to\filter "%1"')
-    pyscfv_warningMessage(errmsg, errtitle, True)
+    if edit_config_on_fail:
+        pyscfv_warningMessage(errmsg, errtitle, edit_config_on_fail)
+    else:
+        global __pyscfv_MESSAGE
+        __pyscfv_MESSAGE = errmsg + '\n\n' + 'Running the pyscfvEditConfig script will open the config file for you'
     return
 
 def pyscfv_errorCheckSection(cDict, section):
     """Error checks "section"; if it does not have a 'command' setting, generate a warning and return None"""
+    if __pyscfv_TRACE: console.write('pyscfv_errorCheckSection()\n')
 
     # if it exists, return the section
     if 'command' in cDict['config'][section]:
@@ -199,11 +227,15 @@ def pyscfv_diplayFilteredOutput(cDict, section, ext='html', skipLaunch=False):
     3. returns the temporary file name (so it can be deleted later)
     """
 
-    if __pyscfv_DEBUG: console.write("displayFilteredOutput(): cDict = {}\n".format(repr(cDict)))
+    if __pyscfv_DEBUG or __pyscfv_TRACE: console.write("displayFilteredOutput(): cDict = {}\n".format(repr(cDict)))
 
     # ensure there is a selected section
     if section is None:
-        raise pyscFilteredViewer_Exception('There is no appropriate section found.  Programmer should have exited earlier in the flow')
+        tempFile = __pyscfv_message_as_html(__pyscfv_MESSAGE, 'editConfig')
+        pyscfv_launch_default_app(tempFile)
+        return tempFile
+        #was: raise pyscFilteredViewer_Exception('There is no appropriate section found.  Programmer should have exited earlier in the flow')
+
 
     # ensure it has a filter command
     if pyscfv_errorCheckSection(cDict, section) is None:
@@ -219,8 +251,26 @@ def pyscfv_diplayFilteredOutput(cDict, section, ext='html', skipLaunch=False):
     # 3 return filename so it can be deleted later
     return tempFile
 
+def __pyscfv_message_as_html(msg, src_fname):
+    """Outputs the message to a named temporary file"""
+    if __pyscfv_TRACE: console.write('pyscfv_filter_file()\n')
+
+    dst_path = os.path.normpath( os.path.join( tempfile.gettempdir(), 'pyscFilteredViewer', '.'.join(('{:08X}'.format(0xFFFFFFFF), os.path.basename(src_fname), 'FILTERED', 'html')) ) )
+    parent = os.path.dirname(dst_path)
+    if not os.path.exists(parent):
+        os.mkdir(parent)
+
+    f = open(dst_path, mode='wt')
+    f.writelines(['<!DOCTYPE html>\n<meta charset="UTF-8">\n<html>\n<xmp>\n',msg,'</xmp>\n</html>'])
+    f.close()
+    if __pyscfv_DEBUG: console.write('"{}": file = {} bytes\n'.format(f.name, os.path.getsize(f.name)))
+
+    return f.name
+
 def pyscfv_filter_file(cmd, src_fname):
     """run the filter command on the given file"""
+    if __pyscfv_TRACE: console.write('pyscfv_filter_file()\n')
+
     import zlib
     c32 = zlib.crc32(src_fname)
     if __pyscfv_DEBUG: console.write('crc(src) = {:08X}\n'.format( c32 ) )
@@ -249,6 +299,8 @@ def pyscfv_filter_file(cmd, src_fname):
 
 def pyscfv_launch_default_app(fname):
     """uses os.startfile() to launch the file with the default windows association"""
+    if __pyscfv_TRACE: console.write('pyscfv_launch_default_app()\n')
+
     # os.startfile()    # https://docs.python.org/2/library/os.html#os.startfile
     if os.path.exists(fname): os.startfile(fname)
 
@@ -260,6 +312,8 @@ def pyscfv_establishConfigFile():
     If created the directory, but PreviewHTML config already exists, copy the PreviewHTML\Filters.ini to pyscFilteredViewer.ini
     If the file finally exists, return the path to the caller.
     """
+    if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_establishConfigFile()\n')
+
     pcd = notepad.getPluginConfigDir()
     if __pyscfv_DEBUG: console.write("Main plugin config directory:\n\t{}\n".format(pcd))
 
@@ -316,9 +370,11 @@ Command="{}" "%1"
 
 def pyscfv_FilteredViewer():
     """Configures and runs the filter for one-shot useage"""
+    if __pyscfv_TRACE: console.write('pyscfv_FilteredViewer()\n')
+
     configObj  = pyscfv_readFiltersIni()
     configDict = pyscfv_parseConfig(configObj)
-    section    = pyscfv_pickSectionBasedOnActiveFile(configDict)
+    section    = pyscfv_pickSectionBasedOnActiveFile(configDict, True)
     if section is None: return
     tmpfile    = pyscfv_diplayFilteredOutput(configDict, section)
     if tmpfile is None: return
@@ -329,12 +385,12 @@ def pyscfv_FilteredViewer():
 
 def pyscfv_Register_FilterOnSave():
     """Register the pyscfv_FilterOnSave function for the FILESAVED event"""
-    if __pyscfv_DEBUG: console.write('Register_FilterOnSave()\n')
+    if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_Register_FilterOnSave()\n')
     pyscfv_Callback_FilterOnSave.configDict = pyscfv_parseConfig( pyscfv_readFiltersIni() )
 
     # run it once making sure to launch the application,
     # but the callback version will not relaunch (so refreshes in the browser are user's responsibility)
-    section    = pyscfv_pickSectionBasedOnActiveFile(pyscfv_Callback_FilterOnSave.configDict)
+    section    = pyscfv_pickSectionBasedOnActiveFile(pyscfv_Callback_FilterOnSave.configDict, True)
     if section is None: return pyscfv_UnRegister_FilterOnSave()
     tmpfile    = pyscfv_diplayFilteredOutput(pyscfv_Callback_FilterOnSave.configDict, section, skipLaunch=False)
     if __pyscfv_DEBUG: console.write('\tsection={}\n\ttmpfile={}\n'.format(section, tmpfile))
@@ -351,6 +407,7 @@ def pyscfv_Register_FilterOnSave():
 
 def pyscfv_OverrideStatusBar(filterIsOn):
     """if filterIsOn, override status bar to indicate filter, otherwise return to default status bar"""
+    if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_OverrideStatusBar()\n')
     fileLangDesc = notepad.getLanguageDesc(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
     if filterIsOn:
         strStatusBar =  u'{} {}'.format( u'\u00A0⇉📺⇉\u00A0', fileLangDesc )                         # ⇉📺⇉ TYPE
@@ -360,7 +417,7 @@ def pyscfv_OverrideStatusBar(filterIsOn):
 
 def pyscfv_UnRegister_FilterOnSave():
     """UnRegisters the pyscfv_FilterOnSave function for the FILESAVED event"""
-    if __pyscfv_DEBUG: console.write('UnRegister_FilterOnSave()\n')
+    if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_UnRegister_FilterOnSave()\n')
     pyscfv_Callback_FilterOnSave.configDict = None
     notepad.clearCallbacks(pyscfv_Callback_FilterOnSave)
 
@@ -371,6 +428,7 @@ def pyscfv_UnRegister_FilterOnSave():
 
 def pyscfv_Toggle_FilterOnSave():
     """Toggles whether or not the FilterOnSave function is active (registered)"""
+    if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_Toggle_FilterOnSave()\n')
     if not hasattr(pyscfv_Callback_FilterOnSave, 'configDict'):
         if __pyscfv_DEBUG: console.write('TOGGLE: DNE: so register'+'\n')
         pyscfv_Register_FilterOnSave()
@@ -383,6 +441,7 @@ def pyscfv_Toggle_FilterOnSave():
 
 def pyscfv_Callback_FilterOnSave(kwargs):
     """This is the callback for when you want to filter on save events"""
+    if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_Callback_FilterOnSave()\n')
 
     # error check
     if pyscfv_Callback_FilterOnSave.configDict is None:
@@ -392,8 +451,8 @@ def pyscfv_Callback_FilterOnSave(kwargs):
     if __pyscfv_DEBUG: console.write('Existing Tempfiles before Callback FilterOnSave = {}\n'.format(pyscfv_Callback_FilterOnSave.tmpfiles))
 
     # grab section for current file
-    section    = pyscfv_pickSectionBasedOnActiveFile(pyscfv_Callback_FilterOnSave.configDict)
-    if section is None: return pyscfv_UnRegister_FilterOnSave()
+    section    = pyscfv_pickSectionBasedOnActiveFile(pyscfv_Callback_FilterOnSave.configDict, False)
+    # was: if section is None: return pyscfv_UnRegister_FilterOnSave()
 
     # re-filter the file once without displaying (logic for displaying was easier later)
     tmpfile = pyscfv_diplayFilteredOutput(pyscfv_Callback_FilterOnSave.configDict, section, skipLaunch=True)
@@ -413,10 +472,11 @@ def pyscfv_Callback_FilterOnSave(kwargs):
 # when i first load the library, clean out the tempdir
 pyscfv_cleanTempDir()
 
+# ##### GET RID OF THE LIBRARY-AS-SCRIPT BEHAVIOR!!!
 # if it's launched in main-mode, rather than imported, use the debug single filter
-if __name__=='__main__':
-    pyscfv_setDebug(True)
-    pyscfv_FilteredViewer()
+#if __name__=='__main__':
+#    pyscfv_setDebug(True)
+#    pyscfv_FilteredViewer()
 
 # if I need a debug version of one of the helper scripts (ie, I made changes to pyscFilteredViewerLibrary.py during development)
 ############################################
