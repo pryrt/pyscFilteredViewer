@@ -319,7 +319,7 @@ def pyscfv_filter_file(cmd, src_fname):
     if __pyscfv_TRACE: console.write('pyscfv_filter_file()\n')
 
     import zlib
-    c32 = zlib.crc32(src_fname)
+    c32 = zlib.crc32(src_fname) & 0xFFFFFFFF        # prevents it from flagging as negative
     if __pyscfv_DEBUG: console.write('crc(src) = {:08X}\n'.format( c32 ) )
 
     #ext = 'html'
