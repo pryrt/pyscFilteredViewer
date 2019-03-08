@@ -35,6 +35,63 @@ import subprocess
 import string
 from time import sleep
 
+################################################################
+# ekopalypse-style getLexerXxx(), based on
+#   https://notepad-plus-plus.org/community/topic/17134/enhance-udl-lexer
+import ctypes
+import ctypes.wintypes as wintypes
+
+user32 = wintypes.WinDLL('user32')
+WM_USER = 1024
+NPPMSG = WM_USER + 1000
+NPPM_GETLANGUAGENAME = NPPMSG+83
+NPPM_GETLANGUAGEDESC = NPPMSG+84
+__npp_hwnd = user32.FindWindowW(u'Notepad++', None)
+# console.show()
+# console.write("init: {}\n".format(__npp_hwnd))
+# console.write("\tgld={}\n\tgln={}\n".format( __eko_getLexerDesc(), __eko_getLexerName() ) )
+
+def __eko_getLexerDesc():
+    ''' Returns the description text which is shown in the first field of the status bar
+
+        Normally one might use notepad.getLanguageDesc(notepad.getLangType())
+        but because this resulted in some strange crashes on my environment ctypes is used.
+
+        original author:    @Eko-palypse aka @ekopalypse
+        original url:       https://notepad-plus-plus.org/community/topic/17134/enhance-udl-lexer
+        original name:      get_lexer_name
+        change notes:       eko's get_lexer_name() really used NPPM_GETLANGUAGEDESC,
+                            so i call this one __eko_getLexerDesc()
+        '''
+    language = notepad.getLangType()
+    length = user32.SendMessageW(__npp_hwnd, NPPM_GETLANGUAGEDESC, language, None)
+    buffer = ctypes.create_unicode_buffer(u' ' * length)
+    user32.SendMessageW(__npp_hwnd, NPPM_GETLANGUAGEDESC, language, ctypes.byref(buffer))
+    #console.write(buffer.value+"\n")  # uncomment if unsure how the lexer name in configure should look like - npp restart needed
+    return buffer.value
+
+def __eko_getLexerName():
+    ''' Returns the name of the current lexer
+
+        Normally one might use notepad.getLanguageName(notepad.getLangType())
+        but because this resulted in some strange crashes on my environment ctypes is used.
+
+        original author:    @Eko-palypse aka @ekopalypse
+        original url:       https://notepad-plus-plus.org/community/topic/17134/enhance-udl-lexer
+        original name:      get_lexer_name
+        change notes:       eko's get_lexer_name() originally used NPPM_GETLANGUAGEDESC,
+                            but I want the NPPM_GETLANGUAGENAME for __eko_getLexerName()
+        '''
+    language = notepad.getLangType()
+    length = user32.SendMessageW(__npp_hwnd, NPPM_GETLANGUAGENAME, language, None)
+    buffer = ctypes.create_unicode_buffer(u' ' * length)
+    user32.SendMessageW(__npp_hwnd, NPPM_GETLANGUAGENAME, language, ctypes.byref(buffer))
+    #console.write(buffer.value+"\n")  # uncomment if unsure how the lexer name in configure should look like - npp restart needed
+    return buffer.value
+
+# /end ekopalypse-style getLexerXxx()
+################################################################
+
 __pyscfv_MESSAGE = ''
 
 __pyscfv_DEBUG = False
@@ -155,8 +212,9 @@ def pyscfv_pickSectionBasedOnActiveFile(cfgDict, edit_config_on_fail = False):
     if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_pickSectionBasedOnActiveFile()\n')
     # this is basically MakeChoiceBasedOnLanguage.py
     fileName = notepad.getCurrentFilename()                 # filename of the current buffer
-    fileLangEnum = notepad.getCurrentLang()                 # gets the LANGTYPE enum for the current buffer
-    fileLangName = notepad.getLanguageName(fileLangEnum)    # converts LANGTYPE to the official string for the selected language
+    fileLangEnum = notepad.getCurrentLang()                 # gets the LANGTYPE enum for the current buffer: is there a difference between .getCurrentLang() and .getLangType()? Not that I can find
+    #fileLangName = notepad.getLanguageName(fileLangEnum)    # converts LANGTYPE to the official string for the selected language
+    fileLangName = __eko_getLexerName()                     # alternate way to convert LANGTYPE to official string for the selected language
     if __pyscfv_DEBUG: console.write('\tfile = "{}"\n\tlanguage = "{}"\n\tlanguage name = "{}"\n'.format( fileName, fileLangEnum, fileLangName ))
     if fileLangEnum is LANGTYPE.USER:                       # UDL will have fileLangName = "udf - UdlLanguageName"
         fileLangName = (fileLangName.split(' - '))[1]       # grab the specific UdlLanguageName
@@ -396,7 +454,8 @@ def pyscfv_Register_FilterOnSave():
 def pyscfv_OverrideStatusBar(filterIsOn):
     """if filterIsOn, override status bar to indicate filter, otherwise return to default status bar"""
     if __pyscfv_DEBUG or __pyscfv_TRACE: console.write('pyscfv_OverrideStatusBar()\n')
-    fileLangDesc = notepad.getLanguageDesc(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
+    #fileLangDesc = notepad.getLanguageDesc(notepad.getCurrentLang())    # converts LANGTYPE to the official string for the selected language
+    fileLangDesc = __eko_getLexerDesc()     # alternate way to convert LANGTYPE to the official description-string for the selected language
     if filterIsOn:
         strStatusBar =  u'{} {}'.format( u'\u00A0⇉📺⇉\u00A0', fileLangDesc )                         # ⇉📺⇉ TYPE
     else:
